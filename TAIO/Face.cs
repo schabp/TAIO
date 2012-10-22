@@ -16,6 +16,7 @@ namespace TAIO
         public bool active;
         //  kostka do której należy ta ścianka
         public Dice dice;
+        public int direction;
     }
 
 }

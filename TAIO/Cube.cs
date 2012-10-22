@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using Direction;
 
 namespace TAIO
 {
-    class Cube
+    class Cube: IEnumerable<Dice>
     {
         private const int HELP_WSP = 2;
         private const int BLOCK_WSP = -1;
@@ -50,6 +51,16 @@ namespace TAIO
                     ret += HELP_WSP;
             }
             return ret;
+        }
+
+        public IEnumerator<Dice> GetEnumerator()
+        {
+            return dices.Cast<Dice>().Where(current=>current!=null).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

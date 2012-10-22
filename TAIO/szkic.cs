@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using C5;
 
 namespace TAIO
 {
@@ -12,16 +13,25 @@ namespace TAIO
 
 
         Queue best;
-        static Queue start(Cube c)
+        public static Queue start(Cube c)
         {
         //  Kostka priorytetowa, gdzie priorytetem jest pole heuristic kostki
-            PQueue p;
-            Queue ret;
+            IPriorityQueue<Dice> pqueue = new IntervalHeap<Dice>();
+            IQueue<Dice> ret = new C5.LinkedList<Dice>();
         //  sprawdzi, które kostki i ścianki są aktywne
         //  dla ścianek z bestValue = 0 doda je do kolejki p i obliczy heurystyke
-            prepare(c, p);
+            prepare(c, pqueue);
             iteartion(c, p, ret);
             return best;
+        }
+
+        public static void prepare(Cube c, IPriorityQueue<Dice> q)
+        {
+            foreach (var dice in c)
+                foreach (var face in dice.SelectMany((f, i) => new {f, i}))
+                {
+                    
+                }
         }
 
         iteration(Cube c, PQueue p, Queue ret)
