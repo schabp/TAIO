@@ -16,17 +16,23 @@ namespace TAIO
         //  ilosc kostek z active = true;
         public int activeDices;
 
-        public int heuristic(Dice d)
+        public void heuristic(Dice d)
         {
             int x = d.x, y = d.y, z = d.z;
-            return Directions.getDirs().Sum(dir => heuristic(x, y, z, d.faces[dir], dir));
+            d.heuristic = Directions.getDirs().Sum(dir => heuristic(x, y, z, dir));
         }
 
-        public int heuristic(int x, int y, int z, Face face, int dir)
+        public int heuristic(int x, int y, int z, int dir)
         {
             int ret = 0;
             int op = Directions.Operand(dir);
-            for(int i = x; i )
+            int sec = Directions.Opposite(dir);
+            for(int i = x + op; i >= 0 && i <= this.x; i+=op)
+            {
+                Dice d = dices[i, y, z];
+                Face f = d.faces[sec];
+
+            }
         }
     }
 
