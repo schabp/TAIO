@@ -46,6 +46,7 @@ namespace TAIO
             this.x = x;
             this.y = y;
             this.z = z;
+            ActiveDices = x*y*z;
         }
 
         public void Heuristic(Dice d)
@@ -62,6 +63,8 @@ namespace TAIO
             for(int i = x + op; i >= 0 && i < this.x; i += op)
             {
                 var d = dices[i, y, z];
+                if (d == null)
+                    continue;
                 var f = d.faces[sec];
                 if (Math.Abs(i - x) == f.startValue + 1)
                     ret += BLOCK_WSP * (6 - d.activeFaces);
@@ -83,8 +86,8 @@ namespace TAIO
 
         public Cube Clone()
         {
-            var ret = new Cube(x, y, z);
-            foreach (var dice in dices)
+            var ret = new Cube(x, y, z){ActiveDices = ActiveDices};
+            foreach (var dice in this)
                 ret.dices[dice.x, dice.y, dice.z] = dice.Clone(ret);
             return ret;
         }

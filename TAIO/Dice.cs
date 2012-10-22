@@ -14,9 +14,9 @@ namespace TAIO
         //  Najlepsza wartość na ściankach(nieskończoność, dla active = false)
         public int bestValue = int.MaxValue;
         //  ilosc ścianek z active=true
-        public int activeFaces;
+        public int activeFaces = 6;
         //  false, gdy activeFaces = 0
-        public bool active;
+        public bool active = true;
         //  obliczona heurystyka(wartość ważna, tylko gdy bestValue=0)
         public int heuristic;
         //  Prostopadloscian do ktorego nalezy kostka
@@ -49,7 +49,7 @@ namespace TAIO
 
         public IEnumerator<Face> GetEnumerator()
         {
-            return (IEnumerator<Face>) faces.GetEnumerator();
+            return faces.Cast<Face>().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -77,6 +77,10 @@ namespace TAIO
 
         public static bool operator==(Dice a, Dice b)
         {
+            if(System.Object.ReferenceEquals(a,b))
+                return true;
+            if (((object)a == null) || ((object)b == null))
+                return false;
             return a.x == b.x && a.y == b.y && a.z == b.z;
         }
 

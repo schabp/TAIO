@@ -13,6 +13,7 @@ namespace TAIO
         static IQueue<Dice> best;
         public static IQueue<Dice> start(Cube c)
         {
+            best = new C5.LinkedList<Dice>();
         //  Kostka priorytetowa, gdzie priorytetem jest pole heuristic kostki
             IPriorityQueue<Dice> pqueue = new IntervalHeap<Dice>();
             IQueue<Dice> ret = new C5.LinkedList<Dice>();
@@ -36,7 +37,7 @@ namespace TAIO
                     {
                         dice.bestValue = 0;
                     }
-                    else if(ind + face.startValue*op > c[ax])
+                    else if(ind + face.startValue*op > c[ax] || ind + face.startValue*op < 0)
                     {
                         face.active = false;
                         face.currentValue = int.MaxValue;
@@ -76,6 +77,7 @@ namespace TAIO
                     if(dice != d)
                         np.Add(cn.dices[dice.x, dice.y, dice.z]);
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
+                var nd = cn.dices[dice.x, dice.y, dice.z];
                 cn.remove(d, np);
             //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
                 if(cn.ActiveDices + ret.Count + 1 > best.Count)
@@ -83,6 +85,7 @@ namespace TAIO
                     IQueue<Dice> nret = new C5.LinkedList<Dice>();
                     foreach (var dice in ret)
                         nret.Enqueue(cn.dices[dice.x, dice.y, dice.z]);
+                    nret.Enqueue(d);
                     iteration(cn, np, nret);
                 }
             }
