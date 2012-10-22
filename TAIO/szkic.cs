@@ -78,27 +78,14 @@ namespace TAIO
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
                 cn.remove(d, np);
             //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
-                if(cn.activeDices + ret.size + 1 > best.size())
+                if(cn.ActiveDices + ret.Count + 1 > best.Count)
                 {
-                    Queue nret = ret.clone();
-                    nret.add(d);
-                    iteration(cn, pn, nret);
+                    IQueue<Dice> nret = new C5.LinkedList<Dice>();
+                    foreach (var dice in ret)
+                        nret.Enqueue(cn.dices[dice.x, dice.y, dice.z]);
+                    iteration(cn, np, nret);
                 }
             }
         }
-
-        // wspolczynniki HELP_WSP i BLOCK_WSP obliczymy metoda prob i bledow
-        int heuristic(Cube c, Dice d) {
-            int ret = 0;
-            foreach(Dice dd in c.Where(x => /*dwie wspolrzedne x zgadzaja sie z dwoma wspolrzednymi d*/))
-            {
-                if(/*usuniecie d "pomoze" dd, czyli zmniejszy value jednej ze scianek*/)
-                    ret += HELP_WSP;
-                else if(/*usuniecie d "zablokuje" usuniecie dd przez jedna ze scianek*/)
-                    ret += BLOCK_WSP * (6 - dd.activeFaces);
-            }
-            return ret;
-        }
-
     }
 }
