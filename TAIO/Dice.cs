@@ -9,19 +9,19 @@ namespace TAIO
     class Dice
     {
         //  Ścianki kostki(0 = N, 1 = E, 2 = W, 3 = S, 4 = U, 5 = D)
-        Face[] faces = new Face[6];
+        public Face[] faces = new Face[6];
         //  Najlepsza wartość na ściankach(nieskończoność, dla active = false)
-        int bestValue;
+        public int bestValue;
         //  ilosc ścianek z active=true
-        int activeFaces;
+        public int activeFaces;
         //  false, gdy activeFaces = 0
-        bool active;
+        public bool active;
         //  obliczona heurystyka(wartość ważna, tylko gdy bestValue=0)
-        int heuristic;
+        public int heuristic;
         //  Prostopadloscian do ktorego nalezy kostka
-        Cube cube;
+        public Cube cube;
         //  pozycja z kostki
-        int x, y, z;
+        public int x, y, z;
     }
 
 }

@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Direction.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="Dice.cs" />
     <Compile Include="Face.cs" />

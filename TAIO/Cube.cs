@@ -3,17 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Direction;
 
 namespace TAIO
 {
     class Cube
     {
         //  Wymiary prostopadloscianu
-        int x, y, z;
+        public int x, y, z;
         //  Kostki w prostopadloscianie
-        Dice[, ,] dices = new Dice[x, y, z];
+        public Dice[, ,] dices = new Dice[x, y, z];
         //  ilosc kostek z active = true;
-        int activeDices;
+        public int activeDices;
+
+        public int heuristic(Dice d)
+        {
+            Face curFace = d.faces[Direction.Direction.D];
+        }
+
+        public int heuristic(int x, int y, int z)
+        {
+            
+        }
     }
 
 }
