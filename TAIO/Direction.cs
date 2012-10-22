@@ -14,6 +14,7 @@ namespace TAIO
         public const int D = 4;
         public const int U = 5;
 
+        public static int[] dirs = new[] { S, U, E, S, W, N };
         public static int Opposite(this int dir)
         {
             return dir ^ 1;
@@ -21,7 +22,7 @@ namespace TAIO
 
         public static IEnumerable<int> GetDirs()
         {
-            return new []{S,N,W,E,D,U};
+            return dirs;
         }
 
         public static int Operand(this int dir)
