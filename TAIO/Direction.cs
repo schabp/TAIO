@@ -19,14 +19,9 @@ namespace Direction
             return dir ^ 1;
         }
 
-        public static IEnumerable<int> getDirs()
+        public static IEnumerable<int> GetDirs()
         {
-            yield return S;
-            yield return N;
-            yield return W;
-            yield return E;
-            yield return D;
-            yield return U;
+            return new []{S,N,W,E,D,U};
         }
 
         public static int Operand(int dir)

@@ -9,13 +9,13 @@ namespace TAIO
     class Face
     {
         //  wartość początkowa
-        int startValue;
+        public int startValue;
         //  ilość kostek, które trzeba jeszcze usunąć, aby móc usunąć kostkę, do której należy ta ścianka(nieskończoność, dla active=false)
-        int currentValue;
+        public int currentValue;
         //  false, jeśli poprzez tą ściankę nie da się usunąć kostki
-        bool active;
+        public bool active;
         //  kostka do której należy ta ścianka
-        Dice dice;
+        public Dice dice;
     }
 
 }

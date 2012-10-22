@@ -9,8 +9,7 @@ namespace TAIO
 {
     class szkic
     {
-        public const int HELP_WSP = 2;
-        public const int BLOCK_WSP = 1;
+
 
         Queue best;
         static Queue start(Cube c)
