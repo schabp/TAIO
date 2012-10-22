@@ -9,6 +9,7 @@ namespace TAIO
     class Loader
     {
         private int x, y, z;
+        public Cube _cube;
         public Loader(string path)
         {
             using (TextReader reader = File.OpenText(@path))
@@ -45,6 +46,7 @@ namespace TAIO
                     line = reader.ReadLine();
                 } while (line != null);
 
+                _cube = c;
             }
         }
     }
