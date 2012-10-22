@@ -3,9 +3,9 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Direction
+namespace TAIO
 {
-    public static class Directions
+    public static class Direction
     {
         public const int S = 0;
         public const int N = 1;
@@ -14,7 +14,7 @@ namespace Direction
         public const int D = 4;
         public const int U = 5;
 
-        public static int Opposite(int dir)
+        public static int Opposite(this int dir)
         {
             return dir ^ 1;
         }
@@ -24,11 +24,16 @@ namespace Direction
             return new []{S,N,W,E,D,U};
         }
 
-        public static int Operand(int dir)
+        public static int Operand(this int dir)
         {
             if ((dir & 1) == 1)
                 return 1;
             return -1;
+        }
+
+        public static int Axis(this int dir)
+        {
+            return dir/2;
         }
     }
 }

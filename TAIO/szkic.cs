@@ -28,10 +28,38 @@ namespace TAIO
         public static void prepare(Cube c, IPriorityQueue<Dice> q)
         {
             foreach (var dice in c)
-                foreach (var face in dice.SelectMany((f, i) => new {f, i}))
+            {
+                foreach (var face in dice)
                 {
-                    
+                    int op = Direction.Operand(face.direction);
+                    int ax = face.direction.Axis();
+                    int ind = dice[ax];
+                    if(face.startValue == 0)
+                    {
+                        dice.bestValue = 0;
+                    }
+                    else if(ind + face.startValue*op > c[ax])
+                    {
+                        face.active = false;
+                        face.currentValue = int.MaxValue;
+                        dice.activeFaces --;
+                    }
+                    else if(face.currentValue < dice.bestValue)
+                    {
+                        dice.bestValue = face.currentValue;
+                    }
                 }
+                if(dice.activeFaces == 0)
+                {
+                    dice.active = false;
+                    c.ActiveDices --;
+                }
+                if(dice.bestValue == 0)
+                {
+                    c.Heuristic(dice);
+                    q.Add(dice);
+                }
+            }
         }
 
         iteration(Cube c, PQueue p, Queue ret)

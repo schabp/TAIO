@@ -23,6 +23,25 @@ namespace TAIO
         public Cube cube;
         //  pozycja z kostki
         public int x, y, z;
+
+        public int this[int pos]
+        {
+            get
+            {
+                switch (pos)
+                {
+                    case 0:
+                        return y;
+                    case 1:
+                        return x;
+                    case 2:
+                        return z;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+        } 
+
         public int CompareTo(Dice other)
         {
             return heuristic.CompareTo(other.heuristic);

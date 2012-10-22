@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Direction;
 
 namespace TAIO
 {
@@ -22,6 +21,24 @@ namespace TAIO
         //  ilosc kostek z active = true;
         public int ActiveDices;
 
+        public int this[int pos]
+        {
+            get
+            {
+                switch(pos)
+                {
+                    case 0:
+                        return y;
+                    case 1:
+                        return x;
+                    case 2:
+                        return z;
+                    default:
+                        throw new IndexOutOfRangeException();
+                }
+            }
+        } 
+
         public Cube(int x, int y, int z)
         {
             dices = new Dice[x,y,z];
@@ -33,14 +50,14 @@ namespace TAIO
         public void Heuristic(Dice d)
         {
             int x = d.x, y = d.y, z = d.z;
-            d.heuristic = Directions.GetDirs().Sum(dir => Heuristic(x, y, z, dir));
+            d.heuristic = Direction.GetDirs().Sum(dir => Heuristic(x, y, z, dir));
         }
 
         private int Heuristic(int x, int y, int z, int dir)
         {
             int ret = 0;
-            int op = Directions.Operand(dir);
-            int sec = Directions.Opposite(dir);
+            int op = dir.Operand();
+            int sec = dir.Opposite();
             for(int i = x + op; i >= 0 && i < this.x; i += op)
             {
                 var d = dices[i, y, z];
