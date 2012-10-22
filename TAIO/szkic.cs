@@ -71,12 +71,12 @@ namespace TAIO
             foreach (Dice d in p)
             {
                 Cube cn = c.Clone();
-                IPriorityQueue<Dice> np = new IntervalHeap<Dice>(p.Count - 1);
+                IPriorityQueue<Dice> np = new IntervalHeap<Dice>(p.Count);
                 foreach (var dice in p)
                     if(dice != d)
                         np.Add(cn.dices[dice.x, dice.y, dice.z]);
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
-                cn.remove(d);
+                cn.remove(d, np);
             //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
                 if(cn.activeDices + ret.size + 1 > best.size())
                 {

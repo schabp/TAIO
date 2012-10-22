@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using C5;
 
 namespace TAIO
 {
@@ -88,9 +89,45 @@ namespace TAIO
             return ret;
         }
 
-        public void remove(Dice dice)
+        public void remove(Dice d, IPriorityQueue<Dice> pq)
         {
-            
+            int x = d.x, y = d.y, z = d.z;
+            dices[x, y, z] = null;
+            foreach(int dir in Direction.GetDirs())
+                remove(x, y, z, dir, pq);
+        }
+
+        private void remove(int x, int y, int z, int dir, IPriorityQueue<Dice> pq)
+        {
+            int op = dir.Operand();
+            int sec = dir.Opposite();
+            for (int i = x + op; i >= 0 && i < this.x; i += op)
+            {
+                var d = dices[i, y, z];
+                if(d==null)
+                    continue;
+                var f = d.faces[sec];
+                if (Math.Abs(i - x) == f.startValue + 1)
+                {
+                    f.active = false;
+                    d.activeFaces--;
+                    if (d.activeFaces == 0)
+                        d.active = false;
+                }
+                else if (Math.Abs(i - x) <= f.startValue)
+                {
+                    f.currentValue--;
+                    if(d.bestValue > f.currentValue)
+                    {
+                        d.bestValue = f.currentValue;
+                        if(d.bestValue == 0)
+                        {
+                            Heuristic(d);
+                            pq.Add(d);
+                        }
+                    } 
+                }
+            }
         }
     }
 

@@ -52,7 +52,7 @@
     <Compile Include="Face.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="szkic.cs" />
+    <Compile Include="szkic.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
