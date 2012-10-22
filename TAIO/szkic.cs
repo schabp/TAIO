@@ -10,10 +10,8 @@ namespace TAIO
 {
     class szkic
     {
-
-
-        Queue best;
-        public static Queue start(Cube c)
+        static IQueue<Dice> best;
+        public static IQueue<Dice> start(Cube c)
         {
         //  Kostka priorytetowa, gdzie priorytetem jest pole heuristic kostki
             IPriorityQueue<Dice> pqueue = new IntervalHeap<Dice>();
@@ -21,7 +19,7 @@ namespace TAIO
         //  sprawdzi, które kostki i ścianki są aktywne
         //  dla ścianek z bestValue = 0 doda je do kolejki p i obliczy heurystyke
             prepare(c, pqueue);
-            iteartion(c, p, ret);
+            iteration(c, pqueue, ret);
             return best;
         }
 
@@ -62,21 +60,23 @@ namespace TAIO
             }
         }
 
-        iteration(Cube c, PQueue p, Queue ret)
+        static void iteration(Cube c, IPriorityQueue<Dice> p, IQueue<Dice> ret)
         {
-            if(p.size == 0) 
+            if(p.IsEmpty) 
             {
-                if(ret.size > best.size) 
+                if(ret.Count > best.Count) 
                     best = ret;
                 return;
             }
             foreach (Dice d in p)
             {
-                Dice cn = c.Clone();
-                PQueue pn = p.clone();
-                pn.remove(d);
+                Cube cn = c.Clone();
+                IPriorityQueue<Dice> np = new IntervalHeap<Dice>(p.Count - 1);
+                foreach (var dice in p)
+                    if(dice != d)
+                        np.Add(cn.dices[dice.x, dice.y, dice.z]);
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
-                cn.remove(d, pn);
+                cn.remove(d);
             //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
                 if(cn.activeDices + ret.size + 1 > best.size())
                 {

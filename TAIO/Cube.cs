@@ -79,6 +79,19 @@ namespace TAIO
         {
             return GetEnumerator();
         }
+
+        public Cube Clone()
+        {
+            var ret = new Cube(x, y, z);
+            foreach (var dice in dices)
+                ret.dices[dice.x, dice.y, dice.z] = dice.Clone(ret);
+            return ret;
+        }
+
+        public void remove(Dice dice)
+        {
+            
+        }
     }
 
 }

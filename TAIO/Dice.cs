@@ -12,11 +12,11 @@ namespace TAIO
         //  Ścianki kostki(0 = N, 1 = E, 2 = W, 3 = S, 4 = U, 5 = D)
         public readonly Face[] faces = new Face[6];
         //  Najlepsza wartość na ściankach(nieskończoność, dla active = false)
-        public int bestValue;
+        public int bestValue = int.MaxValue;
         //  ilosc ścianek z active=true
-        public int activeFaces = 6;
+        public int activeFaces;
         //  false, gdy activeFaces = 0
-        public bool active=true;
+        public bool active;
         //  obliczona heurystyka(wartość ważna, tylko gdy bestValue=0)
         public int heuristic;
         //  Prostopadloscian do ktorego nalezy kostka
@@ -55,6 +55,34 @@ namespace TAIO
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public Dice Clone(Cube c)
+        {
+            var ret = new Dice
+                {
+                    active = active,
+                    activeFaces = activeFaces,
+                    bestValue = bestValue,
+                    cube = c,
+                    heuristic = heuristic,
+                    x = x,
+                    y = y,
+                    z = z
+                };
+            foreach (var face in faces)
+                ret.faces[face.direction] = face.Clone(ret);
+            return ret;
+        }
+
+        public static bool operator==(Dice a, Dice b)
+        {
+            return a.x == b.x && a.y == b.y && a.z == b.z;
+        }
+
+        public static bool operator !=(Dice a, Dice b)
+        {
+            return !(a == b);
         }
     }
 
