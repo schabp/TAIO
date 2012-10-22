@@ -14,9 +14,9 @@ namespace TAIO
         //  Najlepsza wartość na ściankach(nieskończoność, dla active = false)
         public int bestValue;
         //  ilosc ścianek z active=true
-        public int activeFaces;
+        public int activeFaces = 6;
         //  false, gdy activeFaces = 0
-        public bool active;
+        public bool active=true;
         //  obliczona heurystyka(wartość ważna, tylko gdy bestValue=0)
         public int heuristic;
         //  Prostopadloscian do ktorego nalezy kostka

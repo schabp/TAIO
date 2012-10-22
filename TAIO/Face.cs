@@ -13,7 +13,7 @@ namespace TAIO
         //  ilość kostek, które trzeba jeszcze usunąć, aby móc usunąć kostkę, do której należy ta ścianka(nieskończoność, dla active=false)
         public int currentValue;
         //  false, jeśli poprzez tą ściankę nie da się usunąć kostki
-        public bool active;
+        public bool active=true;
         //  kostka do której należy ta ścianka
         public Dice dice;
         public int direction;
