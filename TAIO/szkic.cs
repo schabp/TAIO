@@ -98,11 +98,15 @@ namespace TAIO
             //  Klonujemy kostkę i kolejki, bo się wszystko pochrzani
                 Cube cn = c.Clone();
                 IPriorityQueue<Dice> np = new IntervalHeap<Dice>(p.Count);
-                foreach (var dice in p)
-                    if(dice != d)
-                        np.Add(cn.dices[dice.x, dice.y, dice.z]);
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
                 cn.remove(d, np);
+                foreach (var dice in p)
+                    if (dice != d)
+                    {
+                        Dice dc = cn.dices[dice.x, dice.y, dice.z];
+                        if (!dc.active)
+                            np.Add(dc);
+                    }
             //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
             //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
             //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best

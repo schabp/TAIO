@@ -77,7 +77,7 @@ namespace TAIO
 
         public static bool operator==(Dice a, Dice b)
         {
-            if(System.Object.ReferenceEquals(a,b))
+            if(ReferenceEquals(a,b))
                 return true;
             if (((object)a == null) || ((object)b == null))
                 return false;

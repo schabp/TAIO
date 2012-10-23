@@ -12,7 +12,7 @@ namespace TAIO
         {
             const int howmany = 1;
             //string path = @"C:\Users\Asus\Downloads\SetI.txt";
-            string path = @"C:\Users\Szubster\Desktop\kostka2.txt";
+            string path = @"D:\Pulpit\kostka2.txt";
             Loader load = new Loader(path);
             double duration = 0;
             IQueue<String> ret = null;
@@ -36,6 +36,7 @@ namespace TAIO
             Console.WriteLine(duration/howmany);
             Console.WriteLine("one(s):");
             Console.WriteLine(duration/howmany/1000.0);
+            Console.ReadKey();
         }
     }
 }
