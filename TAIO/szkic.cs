@@ -11,10 +11,11 @@ namespace TAIO
     class szkic
     {
         static IQueue<Dice> best;
-        private static bool end = false;
+        private static bool end;
         public static IQueue<Dice> start(Cube c)
         {
         //  Tutaj zapisujemy najlepsze rozwiązanie(kolejka kostek)
+            end = false;
             best = new C5.LinkedList<Dice>();
         //  Kostka priorytetowa, gdzie priorytetem jest pole heuristic kostki
             IPriorityQueue<Dice> pqueue = new IntervalHeap<Dice>();
