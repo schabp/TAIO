@@ -22,6 +22,10 @@ namespace TAIO
         {
             return new Face { active = active, currentValue = currentValue, dice = d, direction = direction, startValue = startValue };
         }
+        public override string ToString()
+        {
+            return String.Format("[{0}, {1}, {2}]", direction, startValue, currentValue);
+        }
     }
 
 }

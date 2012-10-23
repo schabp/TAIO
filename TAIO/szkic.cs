@@ -11,6 +11,7 @@ namespace TAIO
     class szkic
     {
         static IQueue<Dice> best;
+        private static bool end = false;
         public static IQueue<Dice> start(Cube c)
         {
         //  Tutaj zapisujemy najlepsze rozwiązanie(kolejka kostek)
@@ -82,8 +83,12 @@ namespace TAIO
             if(p.IsEmpty) 
             {
             // Jeśli ilość kostek, które zdjęliśmy jest lepsza od najlepszego wyniku to go zapisujemy.
-                if(ret.Count > best.Count) 
+                if (ret.Count > best.Count)
+                {
                     best = ret;
+                    if (best.Count == c.StartDices)
+                        end = true;
+                }
                 return;
             }
         //  Będziemy sprawdzać każdą kostkę, którą możemy zdjąć
@@ -105,9 +110,10 @@ namespace TAIO
                 {
                     IQueue<Dice> nret = new C5.LinkedList<Dice>();
                     foreach (var dice in ret)
-                        nret.Enqueue(cn.dices[dice.x, dice.y, dice.z]);
+                        nret.Enqueue(dice.Clone(cn));
                     nret.Enqueue(d);
                     iteration(cn, np, nret);
+                    if (end) return;
                 }
             }
         }

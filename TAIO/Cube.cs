@@ -21,7 +21,7 @@ namespace TAIO
         public Dice[, ,] dices;
         //  ilosc kostek z active = true;
         public int ActiveDices;
-
+        public readonly int StartDices;
         public int this[int pos]
         {
             get
@@ -38,6 +38,21 @@ namespace TAIO
                         throw new IndexOutOfRangeException();
                 }
             }
+        }
+
+        public Func<int, Dice> toOneDim(int a, int b, int dir)
+        {
+            switch (dir)
+            {
+                case 0:
+                    return c => (Dice)dices.GetValue(a, c, b);
+                case 1:
+                    return c => (Dice)dices.GetValue(c, a, b);
+                case 2:
+                    return c => (Dice)dices.GetValue(a, b, c);
+                default:
+                    throw new IndexOutOfRangeException();
+            }
         } 
 
         public Cube(int x, int y, int z)
@@ -46,7 +61,7 @@ namespace TAIO
             this.x = x;
             this.y = y;
             this.z = z;
-            ActiveDices = x*y*z;
+            StartDices = ActiveDices = x*y*z;
         }
 
     // ustawia heurystyke dla kostki d.
@@ -64,10 +79,30 @@ namespace TAIO
             int op = dir.Operand();
         //  Zwraca numer ścianki naprzeciwległej
             int sec = dir.Opposite();
-        //  Sprawdzamy wszystkie kostki leżace na osi, którą badamy, w kierunku, który badamy
-            for(int i = x + op; i >= 0 && i < this.x; i += op)
+            Func<int, Dice> func;
+            int ax = dir.Axis();
+            int start;
+            switch(ax)
             {
-                var d = dices[i, y, z];
+                case 0:
+                    start = y;
+                    func = toOneDim(x, z, ax);
+                    break;
+                case 1:
+                    start = x;
+                    func = toOneDim(y, z, ax);
+                    break;
+                case 2:
+                    start = z;
+                    func = toOneDim(x, y, ax);
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+        //  Sprawdzamy wszystkie kostki leżace na osi, którą badamy, w kierunku, który badamy
+            for(int i = start + op; i >= 0 && i < this[ax]; i += op)
+            {
+                var d = func(i);
             //  kostka została usunięta
                 if (d == null)
                     continue;
@@ -118,9 +153,29 @@ namespace TAIO
         {
             int op = dir.Operand();
             int sec = dir.Opposite();
-            for (int i = x + op; i >= 0 && i < this.x; i += op)
+            Func<int, Dice> func;
+            int ax = dir.Axis();
+            int start;
+            switch (ax)
             {
-                var d = dices[i, y, z];
+                case 0:
+                    start = y;
+                    func = toOneDim(x, z, ax);
+                    break;
+                case 1:
+                    start = x;
+                    func = toOneDim(y, z, ax);
+                    break;
+                case 2:
+                    start = z;
+                    func = toOneDim(x, y, ax);
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+            for (int i = start + op; i >= 0 && i < this[ax]; i += op)
+            {
+                var d = func(i);
                 if(d==null)
                     continue;
                 var f = d.faces[sec];
