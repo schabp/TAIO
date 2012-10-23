@@ -92,18 +92,18 @@ namespace TAIO
                 }
                 return;
             }
-            if(p.Count == 1)
-            {
-                Dice d = p.FindMin();
-                p.DeleteMin();
-                c.remove(d, p);
-                ret.Enqueue(d.ToString());
-                if (c.ActiveDices + ret.Count + 1 > best.Count)
-                {
-                    iteration(c, p, ret);
-                }
-                return;
-            }
+            //if(p.Count == 1)
+            //{
+            //    Dice d = p.FindMin();
+            //    p.DeleteMin();
+            //    c.remove(d, p);
+            //    ret.Enqueue(d.ToString());
+            //    if (c.ActiveDices + ret.Count + 1 > best.Count)
+            //    {
+            //        iteration(c, p, ret);
+            //    }
+            //    return;
+            //}
         //  Będziemy sprawdzać każdą kostkę, którą możemy zdjąć
             foreach (Dice d in p)
             {
