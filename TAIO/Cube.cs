@@ -8,8 +8,8 @@ namespace TAIO
 {
     internal class Cube : IEnumerable<Dice>
     {
-        private const int HELP_WSP = 2;
-        private const int BLOCK_WSP = -1;
+        public static int HELP_WSP = 3;
+        public static int BLOCK_WSP = -1;
         public readonly int StartDices;
         public int ActiveDices;
         public Dice[,,] dices;
@@ -117,7 +117,7 @@ namespace TAIO
             {
                 Dice d = func(i);
                 //  kostka została usunięta
-                if (d == null)
+                if (d == null || !d.active)
                     continue;
                 //  pobieramy ściankę zwróconą przodem do naszje kostki
                 Face f = d.faces[sec];
@@ -179,7 +179,7 @@ namespace TAIO
             for (int i = start + op; i >= 0 && i < this[ax]; i += op)
             {
                 Dice d = func(i);
-                if (d == null)
+                if (d == null || !d.active)
                     continue;
                 Face f = d.faces[sec];
                 if (Math.Abs(i - x) == f.startValue + 1)
