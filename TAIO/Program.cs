@@ -23,6 +23,8 @@ namespace TAIO
                 ret = szkic.start(c);
                 DateTime end = DateTime.Now;
                 duration += (end - start).Milliseconds;
+                Console.WriteLine(start);
+                Console.WriteLine(end);
             }
             foreach (var s in ret)
             {
@@ -36,7 +38,7 @@ namespace TAIO
             Console.WriteLine(duration/howmany);
             Console.WriteLine("one(s):");
             Console.WriteLine(duration/howmany/1000.0);
-            Console.ReadKey();
+            //Console.ReadKey();
         }
     }
 }

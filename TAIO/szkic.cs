@@ -96,6 +96,8 @@ namespace TAIO
             {
                 Dice d = p.FindMin();
                 p.DeleteMin();
+                c.remove(d, p);
+                ret.Enqueue(d.ToString());
                 if (c.ActiveDices + ret.Count + 1 > best.Count)
                 {
                     iteration(c, p, ret);
