@@ -10,17 +10,17 @@ namespace TAIO
 {
     class szkic
     {
-        static IQueue<Dice> best;
+        static IQueue<String> best;
         private static bool end;
-        public static IQueue<Dice> start(Cube c)
+        public static IQueue<String> start(Cube c)
         {
         //  Tutaj zapisujemy najlepsze rozwiązanie(kolejka kostek)
             end = false;
-            best = new C5.LinkedList<Dice>();
+            best = new C5.LinkedList<String>();
         //  Kostka priorytetowa, gdzie priorytetem jest pole heuristic kostki
             IPriorityQueue<Dice> pqueue = new IntervalHeap<Dice>();
         //  Tymczasowa kolejka na rozwiązanie(być może przepiszemy do best
-            IQueue<Dice> ret = new C5.LinkedList<Dice>();
+            IQueue<String> ret = new C5.LinkedList<String>();
         //  sprawdzi, które kostki i ścianki są aktywne
         //  dla ścianek z bestValue = 0 doda je do kolejki p i obliczy heurystyke
             prepare(c, pqueue);
@@ -78,7 +78,7 @@ namespace TAIO
             }
         }
 
-        static void iteration(Cube c, IPriorityQueue<Dice> p, IQueue<Dice> ret)
+        static void iteration(Cube c, IPriorityQueue<Dice> p, IQueue<String> ret)
         {
         //  jesli p puste, to nie mamy co zdejmować
             if(p.IsEmpty) 
@@ -109,10 +109,10 @@ namespace TAIO
             //  Zatem następna iterację robi tylko, gdy ma to sens
                 if(cn.ActiveDices + ret.Count + 1 > best.Count)
                 {
-                    IQueue<Dice> nret = new C5.LinkedList<Dice>();
+                    IQueue<String> nret = new C5.LinkedList<String>();
                     foreach (var dice in ret)
-                        nret.Enqueue(dice.Clone(cn));
-                    nret.Enqueue(d);
+                        nret.Enqueue(dice);
+                    nret.Enqueue(d.ToString());
                     iteration(cn, np, nret);
                     if (end) return;
                 }

@@ -2,31 +2,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using C5;
 
 namespace TAIO
 {
-    class Cube: IEnumerable<Dice>
+    internal class Cube : IEnumerable<Dice>
     {
         private const int HELP_WSP = 2;
         private const int BLOCK_WSP = -1;
+        public readonly int StartDices;
+        public int ActiveDices;
+        public Dice[,,] dices;
 
         //  Wymiary prostopadloscianu
         public int x;
         public int y;
         public int z;
+
+        public Cube(int x, int y, int z)
+        {
+            dices = new Dice[x,y,z];
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            StartDices = ActiveDices = x*y*z;
+        }
+
         //  Kostki w prostopadloscianie
-        public Dice[, ,] dices;
-        //  ilosc kostek z active = true;
-        public int ActiveDices;
-        public readonly int StartDices;
+
         public int this[int pos]
         {
             get
             {
-                switch(pos)
+                switch (pos)
                 {
                     case 0:
                         return y;
@@ -40,49 +48,54 @@ namespace TAIO
             }
         }
 
+        #region IEnumerable<Dice> Members
+
+        public IEnumerator<Dice> GetEnumerator()
+        {
+            return dices.Cast<Dice>().Where(current => current != null).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion
+
         public Func<int, Dice> toOneDim(int a, int b, int dir)
         {
             switch (dir)
             {
                 case 0:
-                    return c => (Dice)dices.GetValue(a, c, b);
+                    return c => (Dice) dices.GetValue(a, c, b);
                 case 1:
-                    return c => (Dice)dices.GetValue(c, a, b);
+                    return c => (Dice) dices.GetValue(c, a, b);
                 case 2:
-                    return c => (Dice)dices.GetValue(a, b, c);
+                    return c => (Dice) dices.GetValue(a, b, c);
                 default:
                     throw new IndexOutOfRangeException();
             }
-        } 
-
-        public Cube(int x, int y, int z)
-        {
-            dices = new Dice[x,y,z];
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            StartDices = ActiveDices = x*y*z;
         }
 
-    // ustawia heurystyke dla kostki d.
+        // ustawia heurystyke dla kostki d.
         public void Heuristic(Dice d)
         {
             int x = d.x, y = d.y, z = d.z;
-        //  heurystyka jest heurystyką we wszystkich sześciu kierunkach wychodzących z kostki
+            //  heurystyka jest heurystyką we wszystkich sześciu kierunkach wychodzących z kostki
             d.heuristic = Direction.GetDirs().Sum(dir => Heuristic(x, y, z, dir));
         }
 
         private int Heuristic(int x, int y, int z, int dir)
         {
             int ret = 0;
-        //  zgodnie z osią, czy w przeciwna stronę
+            //  zgodnie z osią, czy w przeciwna stronę
             int op = dir.Operand();
-        //  Zwraca numer ścianki naprzeciwległej
+            //  Zwraca numer ścianki naprzeciwległej
             int sec = dir.Opposite();
             Func<int, Dice> func;
             int ax = dir.Axis();
             int start;
-            switch(ax)
+            switch (ax)
             {
                 case 0:
                     start = y;
@@ -99,39 +112,29 @@ namespace TAIO
                 default:
                     throw new ArgumentException();
             }
-        //  Sprawdzamy wszystkie kostki leżace na osi, którą badamy, w kierunku, który badamy
-            for(int i = start + op; i >= 0 && i < this[ax]; i += op)
+            //  Sprawdzamy wszystkie kostki leżace na osi, którą badamy, w kierunku, który badamy
+            for (int i = start + op; i >= 0 && i < this[ax]; i += op)
             {
-                var d = func(i);
-            //  kostka została usunięta
+                Dice d = func(i);
+                //  kostka została usunięta
                 if (d == null)
                     continue;
-            //  pobieramy ściankę zwróconą przodem do naszje kostki
-                var f = d.faces[sec];
-            //  Usunięcie kostki dla której badamy heurystykę spowoduje zablokowanie usunięcia kostki d poprzez ściankę f
+                //  pobieramy ściankę zwróconą przodem do naszje kostki
+                Face f = d.faces[sec];
+                //  Usunięcie kostki dla której badamy heurystykę spowoduje zablokowanie usunięcia kostki d poprzez ściankę f
                 if (Math.Abs(i - x) == f.startValue + 1)
-                    ret += BLOCK_WSP * (6 - d.activeFaces);
-            //  Usunięcie kostki, dla której badamy heurystykę pomoże kostce d dojść do stanu możliwego do usunięcia poprzez ściankę f
+                    ret += BLOCK_WSP*(6 - d.activeFaces);
+                    //  Usunięcie kostki, dla której badamy heurystykę pomoże kostce d dojść do stanu możliwego do usunięcia poprzez ściankę f
                 else if (Math.Abs(i - x) <= f.startValue)
                     ret += HELP_WSP;
             }
             return ret;
         }
 
-        public IEnumerator<Dice> GetEnumerator()
-        {
-            return dices.Cast<Dice>().Where(current=>current!=null).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public Cube Clone()
         {
-            var ret = new Cube(x, y, z){ActiveDices = ActiveDices};
-            foreach (var dice in this)
+            var ret = new Cube(x, y, z) {ActiveDices = ActiveDices};
+            foreach (Dice dice in this)
                 ret.dices[dice.x, dice.y, dice.z] = dice.Clone(ret);
             return ret;
         }
@@ -140,7 +143,7 @@ namespace TAIO
         {
             int x = d.x, y = d.y, z = d.z;
             dices[x, y, z] = null;
-            foreach(int dir in Direction.GetDirs())
+            foreach (int dir in Direction.GetDirs())
                 remove(x, y, z, dir, pq);
         }
 
@@ -175,10 +178,10 @@ namespace TAIO
             }
             for (int i = start + op; i >= 0 && i < this[ax]; i += op)
             {
-                var d = func(i);
-                if(d==null)
+                Dice d = func(i);
+                if (d == null)
                     continue;
-                var f = d.faces[sec];
+                Face f = d.faces[sec];
                 if (Math.Abs(i - x) == f.startValue + 1)
                 {
                     f.active = false;
@@ -189,18 +192,17 @@ namespace TAIO
                 else if (Math.Abs(i - x) <= f.startValue)
                 {
                     f.currentValue--;
-                    if(d.bestValue > f.currentValue)
+                    if (d.bestValue > f.currentValue)
                     {
                         d.bestValue = f.currentValue;
-                        if(d.bestValue == 0)
+                        if (d.bestValue == 0)
                         {
                             Heuristic(d);
                             pq.Add(d);
                         }
-                    } 
+                    }
                 }
             }
         }
     }
-
 }
