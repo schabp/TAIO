@@ -4,23 +4,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using C5;
 
 namespace TAIO
 {
     class szkic
     {
-        static IQueue<String> best;
+        static List<String> best;
         private static bool end;
-        public static IQueue<String> start(Cube c)
+        private static DateTime startTime;
+        public static List<String> start(Cube c)
         {
+            startTime = DateTime.Now;
         //  Tutaj zapisujemy najlepsze rozwiązanie(kolejka kostek)
             end = false;
-            best = new C5.LinkedList<String>();
+            best = new List<String>();
         //  Kostka priorytetowa, gdzie priorytetem jest pole heuristic kostki
-            IPriorityQueue<Dice> pqueue = new IntervalHeap<Dice>();
+            SortedDiceMultiList pqueue = new SortedDiceMultiList();
         //  Tymczasowa kolejka na rozwiązanie(być może przepiszemy do best
-            IQueue<String> ret = new C5.LinkedList<String>();
+            List<String> ret = new List<String>();
         //  sprawdzi, które kostki i ścianki są aktywne
         //  dla ścianek z bestValue = 0 doda je do kolejki p i obliczy heurystyke
             prepare(c, pqueue);
@@ -29,7 +30,7 @@ namespace TAIO
             return best;
         }
 
-        public static void prepare(Cube c, IPriorityQueue<Dice> q)
+        public static void prepare(Cube c, SortedDiceMultiList q)
         {
         //  Dla każdej kostki
             foreach (var dice in c)
@@ -50,7 +51,7 @@ namespace TAIO
                         dice.bestValue = 0;
                     }
                 //  Kostki nie da się usunąć(wymiary wykraczają poza sześcian)
-                    else if(ind + face.startValue*op > c[ax] || ind + face.startValue*op < 0)
+                    else if(ind + face.startValue*op >= c[ax] || ind + face.startValue*op < 0)
                     {
                     //  ustawiamy ściankę na nieaktywną, kostkę na nieaktywną.
                         face.active = false;
@@ -78,45 +79,48 @@ namespace TAIO
             }
         }
 
-        static void iteration(Cube c, IPriorityQueue<Dice> p, IQueue<String> ret)
+        static void iteration(Cube c, SortedDiceMultiList p, List<String> ret)
         {
         //  jesli p puste, to nie mamy co zdejmować
-            if(p.IsEmpty) 
+            if(p.Count == 0) 
             {
             // Jeśli ilość kostek, które zdjęliśmy jest lepsza od najlepszego wyniku to go zapisujemy.
                 if (ret.Count > best.Count)
                 {
                     best = ret;
+                    Console.WriteLine(DateTime.Now-startTime);
+                    Console.WriteLine(best.Count);
+                    foreach (var d in c.Where(x=>x!=null))
+                        Console.WriteLine(d);
                     if (best.Count == c.StartDices)
                         end = true;
                 }
                 return;
+
             }
-            //if(p.Count == 1)
-            //{
-            //    Dice d = p.FindMin();
-            //    p.DeleteMin();
-            //    c.remove(d, p);
-            //    ret.Enqueue(d.ToString());
-            //    if (c.ActiveDices + ret.Count + 1 > best.Count)
-            //    {
-            //        iteration(c, p, ret);
-            //    }
-            //    return;
-            //}
+            if(p.DiceCount == 1)
+            {
+                Dice d = p.Values[0][0];
+                p.Clear();
+                c.remove(d, p);
+                ret.Add(d.ToString());
+                if (c.ActiveDices + ret.Count + 1 > best.Count)
+                    iteration(c, p, ret);
+                return;
+            }
         //  Będziemy sprawdzać każdą kostkę, którą możemy zdjąć
-            foreach (Dice d in p)
+            foreach (Dice d in p.Values.Reverse().SelectMany(x=>x))
             {
             //  Klonujemy kostkę i kolejki, bo się wszystko pochrzani
                 Cube cn = c.Clone();
-                IPriorityQueue<Dice> np = new IntervalHeap<Dice>(p.Count);
+                SortedDiceMultiList np = new SortedDiceMultiList();
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
                 cn.remove(d, np);
-                foreach (var dice in p)
+                foreach (var dice in p.Values.SelectMany(x=>x))
                     if (dice != d)
                     {
                         Dice dc = cn.dices[dice.x, dice.y, dice.z];
-                        if (!dc.active)
+                        if (dc.active)
                             np.Add(dc);
                     }
             //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
@@ -125,10 +129,8 @@ namespace TAIO
             //  Zatem następna iterację robi tylko, gdy ma to sens
                 if(cn.ActiveDices + ret.Count + 1 > best.Count)
                 {
-                    IQueue<String> nret = new C5.LinkedList<String>();
-                    foreach (var dice in ret)
-                        nret.Enqueue(dice);
-                    nret.Enqueue(d.ToString());
+                    List<String> nret = new List<string>(ret) {d.ToString()};
+
                     iteration(cn, np, nret);
                     if (end) return;
                 }

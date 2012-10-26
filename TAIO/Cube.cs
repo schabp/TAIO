@@ -2,14 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using C5;
 
 namespace TAIO
 {
     internal class Cube : IEnumerable<Dice>
     {
-        public static int HELP_WSP = 3;
-        public static int BLOCK_WSP = -1;
+        public static int HELP_WSP = 4;
+        public static int[] BLOCK_WSP = new [] {-40, -15, -10, -5, 0, 0, 0, 0};
         public readonly int StartDices;
         public int ActiveDices;
         public Dice[,,] dices;
@@ -123,7 +122,7 @@ namespace TAIO
                 Face f = d.faces[sec];
                 //  Usunięcie kostki dla której badamy heurystykę spowoduje zablokowanie usunięcia kostki d poprzez ściankę f
                 if (Math.Abs(i - x) == f.startValue + 1)
-                    ret += BLOCK_WSP*(6 - d.activeFaces);
+                    ret += BLOCK_WSP[d.activeFaces];
                     //  Usunięcie kostki, dla której badamy heurystykę pomoże kostce d dojść do stanu możliwego do usunięcia poprzez ściankę f
                 else if (Math.Abs(i - x) <= f.startValue)
                     ret += HELP_WSP;
@@ -139,12 +138,12 @@ namespace TAIO
             return ret;
         }
 
-        public void remove(Dice d, IPriorityQueue<Dice> pq)
+        public void remove(Dice d, SortedDiceMultiList pq)
         {
             int x = d.x, y = d.y, z = d.z;
             dices[x, y, z] = null;
             foreach (int dir in Direction.GetDirs())
-                remove(x, y, z, dir, pq);
+                remove(d, x, y, z, dir, pq);
         }
 
 
@@ -152,7 +151,7 @@ namespace TAIO
         //Zachowuje się tak samo jak heurystyka, ale poprawia wartości, a nie tylko liczy jakieś liczby.
         //Czyli po usunięciu kostki zapisuje w kostkach zależnych informacje, czy są zblokowane
         //czy zmienił sie ich status dojścia do usunięcia itp.
-        private void remove(int x, int y, int z, int dir, IPriorityQueue<Dice> pq)
+        private void remove(Dice removed, int x, int y, int z, int dir, SortedDiceMultiList pq)
         {
             int op = dir.Operand();
             int sec = dir.Opposite();
@@ -182,14 +181,16 @@ namespace TAIO
                 if (d == null || !d.active)
                     continue;
                 Face f = d.faces[sec];
-                if (Math.Abs(i - x) == f.startValue + 1)
+                if (!f.active)
+                    continue;
+                if (Math.Abs(i - removed[ax]) == f.startValue + 1)
                 {
                     f.active = false;
                     d.activeFaces--;
                     if (d.activeFaces == 0)
                         d.active = false;
                 }
-                else if (Math.Abs(i - x) <= f.startValue)
+                else if (Math.Abs(i - removed[ax]) <= f.startValue)
                 {
                     f.currentValue--;
                     if (d.bestValue > f.currentValue)

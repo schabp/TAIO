@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using C5;
 
 namespace TAIO
 {
@@ -12,25 +11,21 @@ namespace TAIO
         {
             const int howmany = 1;
             //string path = @"C:\Users\Asus\Downloads\SetI.txt";
-            string path = @"D:\Pulpit\kostka2.txt";
+            string path = @"C:\Users\Szubster\Desktop\kostka2.txt";
             Loader load = new Loader(path);
-            Console.WriteLine("load");
             double duration = 0;
-            IQueue<String> ret = null;
+            List<String> ret = null;
             for (int i = 0; i < howmany; i++)
             {
-                Console.WriteLine("clone");
                 Cube c = load._cube.Clone();
                 DateTime start = DateTime.Now;
-                Console.WriteLine("start");
                 ret = szkic.start(c);
-                Console.WriteLine("end");
                 DateTime end = DateTime.Now;
                 duration += (end - start).TotalMilliseconds;
                 Console.WriteLine(start);
                 Console.WriteLine(end);
             }
-            Console.WriteLine("out");
+            Console.WriteLine(ret.Count);
             foreach (var s in ret)
             {
                 Console.WriteLine(s);
