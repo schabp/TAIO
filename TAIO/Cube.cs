@@ -79,12 +79,13 @@ namespace TAIO
         // ustawia heurystyke dla kostki d.
         public void Heuristic(Dice d)
         {
+            d.willBlock = 0;
             int x = d.x, y = d.y, z = d.z;
             //  heurystyka jest heurystyką we wszystkich sześciu kierunkach wychodzących z kostki
-            d.heuristic = Direction.GetDirs().Sum(dir => Heuristic(x, y, z, dir));
+            d.heuristic = Direction.GetDirs().Sum(dir => Heuristic(d, x, y, z, dir));
         }
 
-        private int Heuristic(int x, int y, int z, int dir)
+        private int Heuristic(Dice which, int x, int y, int z, int dir)
         {
             int ret = 0;
             //  zgodnie z osią, czy w przeciwna stronę
@@ -112,7 +113,8 @@ namespace TAIO
                     throw new ArgumentException();
             }
             //  Sprawdzamy wszystkie kostki leżace na osi, którą badamy, w kierunku, który badamy
-            for (int i = start + op; i >= 0 && i < this[ax]; i += op)
+            int max = this[ax];
+            for (int i = start + op; i >= 0 && i < max; i += op)
             {
                 Dice d = func(i);
                 //  kostka została usunięta
@@ -121,10 +123,14 @@ namespace TAIO
                 //  pobieramy ściankę zwróconą przodem do naszje kostki
                 Face f = d.faces[sec];
                 //  Usunięcie kostki dla której badamy heurystykę spowoduje zablokowanie usunięcia kostki d poprzez ściankę f
-                if (Math.Abs(i - x) == f.startValue + 1)
+                int chk = Math.Abs(i - x);
+                if (chk == f.startValue + 1)
+                {
                     ret += BLOCK_WSP[d.activeFaces];
+                    which.willBlock++;
+                }
                     //  Usunięcie kostki, dla której badamy heurystykę pomoże kostce d dojść do stanu możliwego do usunięcia poprzez ściankę f
-                else if (Math.Abs(i - x) <= f.startValue)
+                else if (chk <= f.startValue)
                     ret += HELP_WSP;
             }
             return ret;
@@ -142,6 +148,7 @@ namespace TAIO
         {
             int x = d.x, y = d.y, z = d.z;
             dices[x, y, z] = null;
+            //ActiveDices--;
             foreach (int dir in Direction.GetDirs())
                 remove(d, x, y, z, dir, pq);
         }
@@ -175,7 +182,8 @@ namespace TAIO
                 default:
                     throw new ArgumentException();
             }
-            for (int i = start + op; i >= 0 && i < this[ax]; i += op)
+            int max = this[ax];
+            for (int i = start + op; i >= 0 && i < max; i += op)
             {
                 Dice d = func(i);
                 if (d == null || !d.active)
@@ -183,14 +191,8 @@ namespace TAIO
                 Face f = d.faces[sec];
                 if (!f.active)
                     continue;
-                if (Math.Abs(i - removed[ax]) == f.startValue + 1)
-                {
-                    f.active = false;
-                    d.activeFaces--;
-                    if (d.activeFaces == 0)
-                        d.active = false;
-                }
-                else if (Math.Abs(i - removed[ax]) <= f.startValue)
+                int chk = Math.Abs(i - removed[ax]);
+                if (chk <= f.startValue)
                 {
                     f.currentValue--;
                     if (d.bestValue > f.currentValue)
@@ -201,6 +203,16 @@ namespace TAIO
                             Heuristic(d);
                             pq.Add(d);
                         }
+                    }
+                }
+                else if (chk == f.startValue + 1)
+                {
+                    f.active = false;
+                    d.activeFaces--;
+                    if (d.activeFaces == 0)
+                    {
+                        d.active = false;
+                        d.cube.ActiveDices--;
                     }
                 }
             }

@@ -103,9 +103,11 @@ namespace TAIO
                 Dice d = p.Values[0][0];
                 p.Clear();
                 c.remove(d, p);
-                ret.Add(d.ToString());
-                if (c.ActiveDices + ret.Count + 1 > best.Count)
+                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                {
+                    ret.Add(d.ToString());
                     iteration(c, p, ret);
+                }
                 return;
             }
         //  Będziemy sprawdzać każdą kostkę, którą możemy zdjąć
@@ -116,21 +118,21 @@ namespace TAIO
                 SortedDiceMultiList np = new SortedDiceMultiList();
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
                 cn.remove(d, np);
-                foreach (var dice in p.Values.SelectMany(x=>x))
-                    if (dice != d)
-                    {
-                        Dice dc = cn.dices[dice.x, dice.y, dice.z];
-                        if (dc.active)
-                            np.Add(dc);
-                    }
+                
             //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
             //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
             //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
             //  Zatem następna iterację robi tylko, gdy ma to sens
-                if(cn.ActiveDices + ret.Count + 1 > best.Count)
+                if(cn.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
                 {
                     List<String> nret = new List<string>(ret) {d.ToString()};
-
+                    foreach (var dice in p.Values.SelectMany(x => x))
+                        if (!dice.Equals(d))
+                        {
+                            Dice dc = cn.dices[dice.x, dice.y, dice.z];
+                            if (dc.active)
+                                np.Add(dc);
+                        }
                     iteration(cn, np, nret);
                     if (end) return;
                 }

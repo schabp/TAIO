@@ -24,6 +24,8 @@ namespace TAIO
         //  pozycja z kostki
         public int x, y, z;
 
+        public int willBlock;
+
         public int this[int pos]
         {
             get
@@ -68,30 +70,37 @@ namespace TAIO
                     heuristic = heuristic,
                     x = x,
                     y = y,
-                    z = z
+                    z = z,
+                    willBlock = willBlock
                 };
             foreach (var face in faces)
                 ret.faces[face.direction] = face.Clone(ret);
             return ret;
         }
 
-        public static bool operator==(Dice a, Dice b)
-        {
-            if(ReferenceEquals(a,b))
-                return true;
-            if (((object)a == null) || ((object)b == null))
-                return false;
-            return a.x == b.x && a.y == b.y && a.z == b.z;
-        }
+        //public static bool operator==(Dice a, Dice b)
+        //{
+        //    if(ReferenceEquals(a,b))
+        //        return true;
+        //    if (((object)a == null) || ((object)b == null))
+        //        return false;
+        //    return a.x == b.x && a.y == b.y && a.z == b.z;
+        //}
 
-        public static bool operator !=(Dice a, Dice b)
-        {
-            return !(a == b);
-        }
+        //public static bool operator !=(Dice a, Dice b)
+        //{
+        //    return !(a == b);
+        //}
 
         public override string ToString()
         {
             return String.Format("[{0},{1},{2}]", x, y, z);
+        }
+
+        public override bool Equals(object obj)
+        {
+            Dice d = (Dice) obj;
+            return x == d.x && y == d.y && z == d.z;
         }
     }
 

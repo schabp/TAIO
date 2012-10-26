@@ -11,7 +11,7 @@ namespace TAIO
         {
             const int howmany = 1;
             //string path = @"C:\Users\Asus\Downloads\SetI.txt";
-            string path = @"C:\Users\Szubster\Desktop\kostka2.txt";
+            string path = @"D:\Pulpit\kostka2.txt";
             Loader load = new Loader(path);
             double duration = 0;
             List<String> ret = null;
