@@ -19,9 +19,9 @@ namespace TAIO
             end = false;
             best = new List<String>();
         //  Kostka priorytetowa, gdzie priorytetem jest pole heuristic kostki
-            SortedDiceMultiList pqueue = new SortedDiceMultiList();
+            var pqueue = new SortedDiceMultiList();
         //  Tymczasowa kolejka na rozwiązanie(być może przepiszemy do best
-            List<String> ret = new List<String>();
+            var ret = new List<String>();
         //  sprawdzi, które kostki i ścianki są aktywne
         //  dla ścianek z bestValue = 0 doda je do kolejki p i obliczy heurystyke
             prepare(c, pqueue);
@@ -30,7 +30,7 @@ namespace TAIO
             return best;
         }
 
-        public static void prepare(Cube c, SortedDiceMultiList q)
+        private static void prepare(Cube c, SortedDiceMultiList q)
         {
         //  Dla każdej kostki
             foreach (var dice in c)
@@ -39,7 +39,7 @@ namespace TAIO
                 foreach (var face in dice)
                 {
                 //  Sprawdzamy w którą stronę kieruje się ścianka(malejąco, czy rosnąco z x)
-                    int op = Direction.Operand(face.direction);
+                    int op = face.direction.Operand();
                 //  Sprawdzamy na której osi leży kostka(0-y, 1-x, 2-z)
                     int ax = face.direction.Axis();
                 //  Pobieramy wspórzędną kostki od interesujacej nas osi
@@ -115,7 +115,7 @@ namespace TAIO
             {
             //  Klonujemy kostkę i kolejki, bo się wszystko pochrzani
                 Cube cn = c.Clone();
-                SortedDiceMultiList np = new SortedDiceMultiList();
+                var np = new SortedDiceMultiList();
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
                 cn.remove(d, np);
                 
@@ -125,7 +125,7 @@ namespace TAIO
             //  Zatem następna iterację robi tylko, gdy ma to sens
                 if(cn.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
                 {
-                    List<String> nret = new List<string>(ret) {d.ToString()};
+                    var nret = new List<string>(ret) {d.ToString()};
                     foreach (var dice in p.Values.SelectMany(x => x))
                         if (!dice.Equals(d))
                         {

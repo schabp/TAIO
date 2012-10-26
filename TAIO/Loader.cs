@@ -37,7 +37,6 @@ namespace TAIO
                     {
                         Face f = new Face();
                         f.startValue = f.currentValue = int.Parse(string_table[i]);
-                        f.dice = d;
                         f.direction = Direction.dirs[i - 3];
                         d.faces[f.direction] = f;
                     }

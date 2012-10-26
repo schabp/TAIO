@@ -22,7 +22,9 @@ namespace TAIO
         //  Prostopadloscian do ktorego nalezy kostka
         public Cube cube;
         //  pozycja z kostki
-        public int x, y, z;
+        public int x;
+        public int y;
+        public int z;
 
         public int willBlock;
 
@@ -99,8 +101,13 @@ namespace TAIO
 
         public override bool Equals(object obj)
         {
-            Dice d = (Dice) obj;
+            var d = (Dice) obj;
             return x == d.x && y == d.y && z == d.z;
+        }
+
+        public override int GetHashCode()
+        {
+            return x ^ y ^ z;
         }
     }
 

@@ -15,12 +15,11 @@ namespace TAIO
         //  false, jeśli poprzez tą ściankę nie da się usunąć kostki
         public bool active = true;
         //  kostka do której należy ta ścianka
-        public Dice dice;
         public int direction;
 
         public Face Clone(Dice d)
         {
-            return new Face { active = active, currentValue = currentValue, dice = d, direction = direction, startValue = startValue };
+            return new Face { active = active, currentValue = currentValue, direction = direction, startValue = startValue };
         }
         public override string ToString()
         {

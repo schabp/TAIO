@@ -7,7 +7,7 @@ namespace TAIO
 {
     class SortedDiceMultiList : SortedList<int, List<Dice>>
     {
-        public int DiceCount = 0;
+        public int DiceCount;
 
         public void Add(Dice item)
         {

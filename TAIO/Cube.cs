@@ -7,16 +7,16 @@ namespace TAIO
 {
     internal class Cube : IEnumerable<Dice>
     {
-        public static int HELP_WSP = 4;
-        public static int[] BLOCK_WSP = new [] {-40, -15, -10, -5, 0, 0, 0, 0};
+        private const int HELP_WSP = 4;
+        private static readonly int[] BLOCK_WSP = new [] {-40, -15, -10, -5, 0, 0, 0, 0};
         public readonly int StartDices;
         public int ActiveDices;
-        public Dice[,,] dices;
+        public readonly Dice[,,] dices;
 
         //  Wymiary prostopadloscianu
-        public int x;
-        public int y;
-        public int z;
+        private readonly int x;
+        private readonly int y;
+        private readonly int z;
 
         public Cube(int x, int y, int z)
         {
@@ -61,7 +61,7 @@ namespace TAIO
 
         #endregion
 
-        public Func<int, Dice> toOneDim(int a, int b, int dir)
+        private Func<int, Dice> toOneDim(int a, int b, int dir)
         {
             switch (dir)
             {
