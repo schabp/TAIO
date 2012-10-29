@@ -88,10 +88,10 @@ namespace TAIO
                 if (ret.Count > best.Count)
                 {
                     best = ret;
-                    Console.WriteLine(DateTime.Now-startTime);
-                    Console.WriteLine(best.Count);
-                    foreach (var d in c.Where(x=>x!=null))
-                        Console.WriteLine(d);
+                    //Console.WriteLine(DateTime.Now-startTime);
+                    //Console.WriteLine(best.Count);
+                    //foreach (var d in c.Where(x=>x!=null))
+                    //    Console.WriteLine(d);
                     if (best.Count == c.StartDices)
                         end = true;
                 }
@@ -148,10 +148,10 @@ namespace TAIO
                 if (ret.Count > best.Count)
                 {
                     best = ret;
-                    Console.WriteLine(DateTime.Now - startTime);
-                    Console.WriteLine(best.Count);
-                    foreach (var d in c.Where(x => x != null))
-                        Console.WriteLine(d);
+                    //Console.WriteLine(DateTime.Now - startTime);
+                    //Console.WriteLine(best.Count);
+                    //foreach (var d in c.Where(x => x != null))
+                    //    Console.WriteLine(d);
                     if (best.Count == c.StartDices)
                         end = true;
                 }

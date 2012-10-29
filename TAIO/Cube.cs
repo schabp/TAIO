@@ -7,8 +7,8 @@ namespace TAIO
 {
     internal class Cube : IEnumerable<Dice>
     {
-        private const int HELP_WSP = 4;
-        private static readonly int[] BLOCK_WSP = new [] {-40, -15, -10, -5, 0, 0, 0, 0};
+        public static int HELP_WSP = 4;
+        public static int[] BLOCK_WSP = new [] {-40, -15, -10, -5, 0, 0, 0};
         public readonly int StartDices;
         public int ActiveDices;
         public readonly Dice[,,] dices;
