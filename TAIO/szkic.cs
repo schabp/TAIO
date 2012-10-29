@@ -26,7 +26,7 @@ namespace TAIO
         //  dla ścianek z bestValue = 0 doda je do kolejki p i obliczy heurystyke
             prepare(c, pqueue);
         //  Pojedyńczy krok algorytmu
-            iteration(c, pqueue, ret);
+            iterationGreedy(c, pqueue, ret);
             return best;
         }
 
@@ -138,5 +138,64 @@ namespace TAIO
                 }
             }
         }
+
+        static void iterationGreedy(Cube c, SortedDiceMultiList p, List<String> ret)
+        {
+            //  jesli p puste, to nie mamy co zdejmować
+            if (p.Count == 0)
+            {
+                // Jeśli ilość kostek, które zdjęliśmy jest lepsza od najlepszego wyniku to go zapisujemy.
+                if (ret.Count > best.Count)
+                {
+                    best = ret;
+                    Console.WriteLine(DateTime.Now - startTime);
+                    Console.WriteLine(best.Count);
+                    foreach (var d in c.Where(x => x != null))
+                        Console.WriteLine(d);
+                    if (best.Count == c.StartDices)
+                        end = true;
+                }
+                return;
+
+            }
+            if (p.DiceCount == 1)
+            {
+                Dice d = p.Values[0][0];
+                p.Clear();
+                c.remove(d, p);
+                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                {
+                    ret.Add(d.ToString());
+                    iterationGreedy(c, p, ret);
+                }
+                return;
+            }
+            //  Klonujemy kostkę i kolejki, bo się wszystko pochrzani
+            Cube cn = c;
+            var np = new SortedDiceMultiList();
+            Dice dd = p.Values[p.Count-1][0];
+            //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
+            cn.remove(dd, np);
+
+            //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
+            //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
+            //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
+            //  Zatem następna iterację robi tylko, gdy ma to sens
+            if (cn.ActiveDices + ret.Count - dd.willBlock + 1 > best.Count)
+            {
+                ret.Add(dd.ToString());
+                foreach (var dice in p.Values.SelectMany(x => x))
+                    if (!dice.Equals(dd))
+                    {
+                        Dice dc = cn.dices[dice.x, dice.y, dice.z];
+                        if (dc.active)
+                            np.Add(dc);
+                    }
+                iterationGreedy(cn, np, ret);
+            }
+           
+        }
+
+
     }
 }
