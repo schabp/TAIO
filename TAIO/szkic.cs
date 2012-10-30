@@ -10,6 +10,7 @@ namespace TAIO
     class szkic
     {
         static List<String> best;
+        private const int WSP_DELTA = 10;
         private static bool end;
         private static DateTime startTime;
         private static int cnt;
@@ -31,7 +32,11 @@ namespace TAIO
         //  dla ścianek z bestValue = 0 doda je do kolejki p i obliczy heurystyke
             prepare(c, pqueue);
         //  Pojedyńczy krok algorytmu
+<<<<<<< HEAD
             iteration(c, pqueue, ret);
+=======
+            beamedDeltaGreedy(c, pqueue, ret);
+>>>>>>> a7b117243bb4e3b3a8dde0890c6bf241b65d54fe
             return best;
         }
 
@@ -210,6 +215,128 @@ namespace TAIO
            
         }
 
+        static void beamedGreedy(Cube c, SortedDiceMultiList p, List<String> ret)
+        {
+            //  jesli p puste, to nie mamy co zdejmować
+            if (p.Count == 0)
+            {
+                // Jeśli ilość kostek, które zdjęliśmy jest lepsza od najlepszego wyniku to go zapisujemy.
+                if (ret.Count > best.Count)
+                {
+                    best = ret;
+                    Console.WriteLine(DateTime.Now - startTime);
+                    Console.WriteLine(best.Count);
+                    foreach (var d in c.Where(x => x != null))
+                        Console.WriteLine(d);
+                    if (best.Count == c.StartDices)
+                        end = true;
+                }
+                return;
 
+            }
+            if (p.DiceCount == 1)
+            {
+                Dice d = p.Values[0][0];
+                p.Clear();
+                c.remove(d, p);
+                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                {
+                    ret.Add(d.ToString());
+                    beamedGreedy(c, p, ret);
+                }
+                return;
+            }
+            //  Będziemy sprawdzać każdą kostkę, którą możemy zdjąć
+            foreach (Dice d in p.Values.Reverse().SelectMany(x => x).Take(3))
+            {
+                //  Klonujemy kostkę i kolejki, bo się wszystko pochrzani
+                Cube cn = c.Clone();
+                var np = new SortedDiceMultiList();
+                //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
+                cn.remove(d, np);
+
+                //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
+                //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
+                //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
+                //  Zatem następna iterację robi tylko, gdy ma to sens
+                if (cn.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                {
+                    var nret = new List<string>(ret) { d.ToString() };
+                    foreach (var dice in p.Values.SelectMany(x => x))
+                        if (!dice.Equals(d))
+                        {
+                            Dice dc = cn.dices[dice.x, dice.y, dice.z];
+                            if (dc.active)
+                                np.Add(dc);
+                        }
+                    beamedGreedy(cn, np, nret);
+                    if (end) return;
+                }
+            }
+        }
+
+        static void beamedDeltaGreedy(Cube c, SortedDiceMultiList p, List<String> ret)
+        {
+            //  jesli p puste, to nie mamy co zdejmować
+            if (p.Count == 0)
+            {
+                // Jeśli ilość kostek, które zdjęliśmy jest lepsza od najlepszego wyniku to go zapisujemy.
+                if (ret.Count > best.Count)
+                {
+                    best = ret;
+                    Console.WriteLine(DateTime.Now - startTime);
+                    Console.WriteLine(best.Count);
+                    foreach (var d in c.Where(x => x != null))
+                        Console.WriteLine(d);
+                    if (best.Count == c.StartDices)
+                        end = true;
+                }
+                return;
+
+            }
+            if (p.DiceCount == 1)
+            {
+                Dice d = p.Values[0][0];
+                p.Clear();
+                c.remove(d, p);
+                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                {
+                    ret.Add(d.ToString());
+                    beamedDeltaGreedy(c, p, ret);
+                }
+                return;
+            }
+            //  Będziemy sprawdzać każdą kostkę, którą możemy zdjąć
+            int heur = p.Values[p.Count - 1][0].heuristic;
+            Console.WriteLine(p.Values[p.Count - 1].Count);
+            foreach (Dice d in p.Values.Reverse().SelectMany(x => x).TakeWhile(x => heur - x.heuristic <= WSP_DELTA))
+            {
+                //  Klonujemy kostkę i kolejki, bo się wszystko pochrzani
+                Cube cn = c.Clone();
+                var np = new SortedDiceMultiList();
+                //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
+                cn.remove(d, np);
+
+                //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
+                //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
+                //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
+                //  Zatem następna iterację robi tylko, gdy ma to sens
+                if (cn.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                {
+                    var nret = new List<string>(ret) { d.ToString() };
+                    foreach (var dice in p.Values.SelectMany(x => x))
+                        if (!dice.Equals(d))
+                        {
+                            Dice dc = cn.dices[dice.x, dice.y, dice.z];
+                            if (dc.active)
+                                np.Add(dc);
+                        }
+                    //Console.WriteLine("The best huristic: {0}", heur.ToString());
+                    //Console.WriteLine("The huristic: {0}", d.heuristic.ToString());
+                    beamedDeltaGreedy(cn, np, nret);
+                    if (end) return;
+                }
+            }
+        }
     }
 }
