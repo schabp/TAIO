@@ -8,7 +8,7 @@ namespace TAIO
     internal class Cube : IEnumerable<Dice>
     {
         private const int HELP_WSP = 4;
-        private static readonly int[] BLOCK_WSP = new [] {-40, -15, -10, -5, 0, 0, 0, 0};
+        private static readonly int[] BLOCK_WSP = new[] { 0, -10, -7, -3, -1, 0, 0 };
         public readonly int StartDices;
         public int ActiveDices;
         public readonly Dice[,,] dices;
@@ -36,9 +36,9 @@ namespace TAIO
                 switch (pos)
                 {
                     case 0:
-                        return y;
-                    case 1:
                         return x;
+                    case 1:
+                        return y;
                     case 2:
                         return z;
                     default:
@@ -66,9 +66,9 @@ namespace TAIO
             switch (dir)
             {
                 case 0:
-                    return c => (Dice) dices.GetValue(a, c, b);
-                case 1:
                     return c => (Dice) dices.GetValue(c, a, b);
+                case 1:
+                    return c => (Dice) dices.GetValue(a, c, b);
                 case 2:
                     return c => (Dice) dices.GetValue(a, b, c);
                 default:
@@ -98,12 +98,12 @@ namespace TAIO
             switch (ax)
             {
                 case 0:
-                    start = y;
-                    func = toOneDim(x, z, ax);
-                    break;
-                case 1:
                     start = x;
                     func = toOneDim(y, z, ax);
+                    break;
+                case 1:
+                    start = y;
+                    func = toOneDim(x, z, ax);
                     break;
                 case 2:
                     start = z;
@@ -168,12 +168,12 @@ namespace TAIO
             switch (ax)
             {
                 case 0:
-                    start = y;
-                    func = toOneDim(x, z, ax);
-                    break;
-                case 1:
                     start = x;
                     func = toOneDim(y, z, ax);
+                    break;
+                case 1:
+                    start = y;
+                    func = toOneDim(x, z, ax);
                     break;
                 case 2:
                     start = z;

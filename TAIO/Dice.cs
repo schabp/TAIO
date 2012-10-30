@@ -35,9 +35,9 @@ namespace TAIO
                 switch (pos)
                 {
                     case 0:
-                        return y;
-                    case 1:
                         return x;
+                    case 1:
+                        return y;
                     case 2:
                         return z;
                     default:

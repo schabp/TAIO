@@ -10,8 +10,8 @@ namespace TAIO
         public static void Main()
         {
             const int howmany = 1;
-            string path = @"D:\Pobrane\SetI.txt";
-            //const string path = @"D:\Pulpit\kostka2.txt";
+            //string path = @"D:\Pobrane\SetI.txt";
+            const string path = @"C:\Users\Szubster\Desktop\kostka2.txt";
             var load = new Loader(path);
             double duration = 0;
             List<String> ret = null;

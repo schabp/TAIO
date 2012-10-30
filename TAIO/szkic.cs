@@ -104,7 +104,7 @@ namespace TAIO
                 Dice d = p.Values[0][0];
                 p.Clear();
                 c.remove(d, p);
-                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                if (c.ActiveDices + 1 > best.Count)
                 {
                     ret.Add(d.ToString());
                     iteration(c, p, ret);
@@ -124,7 +124,7 @@ namespace TAIO
             //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
             //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
             //  Zatem następna iterację robi tylko, gdy ma to sens
-                if(cn.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                if(cn.ActiveDices + 1 > best.Count)
                 {
                     var nret = new List<string>(ret) {d.ToString()};
                     foreach (var dice in p.Values.SelectMany(x => x))
@@ -164,7 +164,7 @@ namespace TAIO
                 Dice d = p.Values[0][0];
                 p.Clear();
                 c.remove(d, p);
-                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                if (c.ActiveDices + 1 > best.Count)
                 {
                     ret.Add(d.ToString());
                     iterationGreedy(c, p, ret);
@@ -182,7 +182,7 @@ namespace TAIO
             //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
             //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
             //  Zatem następna iterację robi tylko, gdy ma to sens
-            if (cn.ActiveDices + ret.Count - dd.willBlock + 1 > best.Count)
+            if (cn.ActiveDices + 1 > best.Count)
             {
                 ret.Add(dd.ToString());
                 foreach (var dice in p.Values.SelectMany(x => x))
@@ -221,7 +221,7 @@ namespace TAIO
                 Dice d = p.Values[0][0];
                 p.Clear();
                 c.remove(d, p);
-                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                if (c.ActiveDices + 1 > best.Count)
                 {
                     ret.Add(d.ToString());
                     beamedGreedy(c, p, ret);
@@ -241,7 +241,7 @@ namespace TAIO
                 //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
                 //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
                 //  Zatem następna iterację robi tylko, gdy ma to sens
-                if (cn.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                if (cn.ActiveDices + 1 > best.Count)
                 {
                     var nret = new List<string>(ret) { d.ToString() };
                     foreach (var dice in p.Values.SelectMany(x => x))
@@ -281,7 +281,7 @@ namespace TAIO
                 Dice d = p.Values[0][0];
                 p.Clear();
                 c.remove(d, p);
-                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                if (c.ActiveDices + 1 > best.Count)
                 {
                     ret.Add(d.ToString());
                     beamedDeltaGreedy(c, p, ret);
@@ -290,7 +290,6 @@ namespace TAIO
             }
             //  Będziemy sprawdzać każdą kostkę, którą możemy zdjąć
             int heur = p.Values[p.Count - 1][0].heuristic;
-            Console.WriteLine(p.Values[p.Count - 1].Count);
             foreach (Dice d in p.Values.Reverse().SelectMany(x => x).TakeWhile(x => heur - x.heuristic <= WSP_DELTA))
             {
                 //  Klonujemy kostkę i kolejki, bo się wszystko pochrzani
@@ -303,7 +302,7 @@ namespace TAIO
                 //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
                 //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
                 //  Zatem następna iterację robi tylko, gdy ma to sens
-                if (cn.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                if (cn.ActiveDices + 1 > best.Count)
                 {
                     var nret = new List<string>(ret) { d.ToString() };
                     foreach (var dice in p.Values.SelectMany(x => x))
