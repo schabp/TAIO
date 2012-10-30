@@ -12,8 +12,13 @@ namespace TAIO
         static List<String> best;
         private static bool end;
         private static DateTime startTime;
+        private static int cnt;
+        private static int branch;
+        private static int StartDices;
         public static List<String> start(Cube c)
         {
+            StartDices = c[0]*c[1]*c[2];
+            c.ActiveDices = StartDices;
             startTime = DateTime.Now;
         //  Tutaj zapisujemy najlepsze rozwiązanie(kolejka kostek)
             end = false;
@@ -26,56 +31,65 @@ namespace TAIO
         //  dla ścianek z bestValue = 0 doda je do kolejki p i obliczy heurystyke
             prepare(c, pqueue);
         //  Pojedyńczy krok algorytmu
-            iterationGreedy(c, pqueue, ret);
+            iteration(c, pqueue, ret);
             return best;
         }
 
         private static void prepare(Cube c, SortedDiceMultiList q)
         {
         //  Dla każdej kostki
+            LinkedList<Dice> toHeur = new LinkedList<Dice>();
             foreach (var dice in c)
             {
             //  Dla każdej ścianki na kostce
-                foreach (var face in dice)
+                bool hasZero = false;
+                for (int dir = 0; dir < 6;dir++ )
                 {
-                //  Sprawdzamy w którą stronę kieruje się ścianka(malejąco, czy rosnąco z x)
-                    int op = face.direction.Operand();
-                //  Sprawdzamy na której osi leży kostka(0-y, 1-x, 2-z)
-                    int ax = face.direction.Axis();
-                //  Pobieramy wspórzędną kostki od interesujacej nas osi
+                    Face face = dice.faces[dir];
+                    //  Sprawdzamy w którą stronę kieruje się ścianka(malejąco, czy rosnąco z x)
+                    int op = dir.Operand();
+                    //  Sprawdzamy na której osi leży kostka(0-y, 1-x, 2-z)
+                    int ax = dir.Axis();
+                    //  Pobieramy wspórzędną kostki od interesujacej nas osi
                     int ind = dice[ax];
-                //  Jeśli kostka ma zero, nie ma co więcej liczyć, zawsze można ją usunąć
-                    if(face.startValue == 0)
+                    //  Jeśli kostka ma zero, nie ma co więcej liczyć, zawsze można ją usunąć
+                    if (face.startValue == 0)
                     {
-                    //  poprawiamy najlpeszą wartość na kostce
-                        dice.bestValue = 0;
+                        //  poprawiamy najlpeszą wartość na kostce
+                        hasZero = true;
                     }
-                //  Kostki nie da się usunąć(wymiary wykraczają poza sześcian)
-                    else if(ind + face.startValue*op >= c[ax] || ind + face.startValue*op < 0)
+                    //  Kostki nie da się usunąć(wymiary wykraczają poza sześcian)
+                    else if (ind + face.startValue * op >= c[ax] || ind + face.startValue * op < 0)
                     {
-                    //  ustawiamy ściankę na nieaktywną, kostkę na nieaktywną.
-                        face.active = false;
+                        //  ustawiamy ściankę na nieaktywną, kostkę na nieaktywną.
+                        face.InActive = false;
                         face.currentValue = int.MaxValue;
-                        dice.activeFaces --;
+                        dice.activeFaces--;
                     }
-                //  Być może obliczona wartosć jest najlepsza dla kostki
-                    else if(face.currentValue < dice.bestValue)
-                    {
-                        dice.bestValue = face.currentValue;
-                    }
+                    //  Być może obliczona wartosć jest najlepsza dla kostki
+                    //else if(face.currentValue < dice.bestValue)
+                    //{
+                    //    dice.bestValue = face.currentValue;
+                    //}
                 }
             //  Jeśli nie mamy aktywnych ścianek, to nie mamy aktywnej kostki
                 if(dice.activeFaces == 0)
                 {
-                    dice.active = false;
+                    //dice.active = false;
                     c.ActiveDices --;
                 }
             //  Możemy usunąć tą kostkę, obliczmy jej heurystykę i dodajmy do kolejki.
-                if(dice.bestValue == 0)
+                if(hasZero)
                 {
-                    c.Heuristic(dice);
-                    q.Add(dice);
+                    //c.Heuristic(dice);
+                    //q.Add(dice);
+                    toHeur.AddLast(dice);
                 }
+            }
+            foreach (var dice in toHeur)
+            {
+                c.Heuristic(dice, 0);
+                q.Add(dice);
             }
         }
 
@@ -88,11 +102,11 @@ namespace TAIO
                 if (ret.Count > best.Count)
                 {
                     best = ret;
-                    //Console.WriteLine(DateTime.Now-startTime);
-                    //Console.WriteLine(best.Count);
-                    //foreach (var d in c.Where(x=>x!=null))
-                    //    Console.WriteLine(d);
-                    if (best.Count == c.StartDices)
+                    Console.WriteLine(DateTime.Now-startTime);
+                    Console.WriteLine(best.Count);
+                    foreach (var d in c.Where(x=>x!=null))
+                        Console.WriteLine(d);
+                    if (best.Count == StartDices)
                         end = true;
                 }
                 return;
@@ -102,8 +116,8 @@ namespace TAIO
             {
                 Dice d = p.Values[0][0];
                 p.Clear();
-                c.remove(d, p);
-                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                c.remove(d, p, best.Count);
+                if (c.ActiveDices + 1 > best.Count)
                 {
                     ret.Add(d.ToString());
                     iteration(c, p, ret);
@@ -117,20 +131,20 @@ namespace TAIO
                 Cube cn = c.Clone();
                 var np = new SortedDiceMultiList();
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
-                cn.remove(d, np);
+                cn.remove(d, np, best.Count);
                 
             //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
             //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
             //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
             //  Zatem następna iterację robi tylko, gdy ma to sens
-                if(cn.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                if(cn.ActiveDices + 1 > best.Count)
                 {
                     var nret = new List<string>(ret) {d.ToString()};
                     foreach (var dice in p.Values.SelectMany(x => x))
-                        if (!dice.Equals(d))
+                        if (dice!=d)
                         {
                             Dice dc = cn.dices[dice.x, dice.y, dice.z];
-                            if (dc.active)
+                            if (dc.activeFaces != 0)
                                 np.Add(dc);
                         }
                     iteration(cn, np, nret);
@@ -152,7 +166,7 @@ namespace TAIO
                     //Console.WriteLine(best.Count);
                     //foreach (var d in c.Where(x => x != null))
                     //    Console.WriteLine(d);
-                    if (best.Count == c.StartDices)
+                    if (best.Count == StartDices)
                         end = true;
                 }
                 return;
@@ -162,8 +176,8 @@ namespace TAIO
             {
                 Dice d = p.Values[0][0];
                 p.Clear();
-                c.remove(d, p);
-                if (c.ActiveDices + ret.Count - d.willBlock + 1 > best.Count)
+                c.remove(d, p, best.Count);
+                if (c.ActiveDices + 1 > best.Count)
                 {
                     ret.Add(d.ToString());
                     iterationGreedy(c, p, ret);
@@ -175,20 +189,20 @@ namespace TAIO
             var np = new SortedDiceMultiList();
             Dice dd = p.Values[p.Count-1][0];
             //  Usuwa kostke d, poprawia heurystyki i inne wartosci pol
-            cn.remove(dd, np);
+            cn.remove(dd, np, best.Count);
 
             //  Dzieki temu napewno nie uzyskamy lepszego rozwiazania, jesli if zwroci false)
             //  Jeśli ilość aktywnych kostek + ilość kostek jakie już usunęliśmy + 1(usuwana właśnie kostka)
             //  Jest mniejsza lub równa best.Count to nie uda nam się poprawić best
             //  Zatem następna iterację robi tylko, gdy ma to sens
-            if (cn.ActiveDices + ret.Count - dd.willBlock + 1 > best.Count)
+            if (cn.ActiveDices + 1 > best.Count)
             {
                 ret.Add(dd.ToString());
                 foreach (var dice in p.Values.SelectMany(x => x))
                     if (!dice.Equals(dd))
                     {
                         Dice dc = cn.dices[dice.x, dice.y, dice.z];
-                        if (dc.active)
+                        if (dc.activeFaces != 0)
                             np.Add(dc);
                     }
                 iterationGreedy(cn, np, ret);

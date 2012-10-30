@@ -32,13 +32,13 @@ namespace TAIO
                     d.x = _x;
                     d.z = _z;
                     d.y = _y;
-                    d.cube = c;
+                    //d.cube = c;
                     for (int i = 3; i < 9; i++)
                     {
                         Face f = new Face();
                         f.startValue = f.currentValue = int.Parse(string_table[i]);
-                        f.direction = Direction.dirs[i - 3];
-                        d.faces[f.direction] = f;
+                        //f.direction = Direction.dirs[i - 3];
+                        d.faces[Direction.dirs[i-3]] = f;
                     }
                     c.dices[_x, _y, _z] = d;
                     line = reader.ReadLine();

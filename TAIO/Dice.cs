@@ -12,21 +12,33 @@ namespace TAIO
         //  Ścianki kostki(0 = N, 1 = E, 2 = W, 3 = S, 4 = U, 5 = D)
         public readonly Face[] faces = new Face[6];
         //  Najlepsza wartość na ściankach(nieskończoność, dla active = false)
-        public int bestValue = int.MaxValue;
+        //public int bestValue = int.MaxValue;
         //  ilosc ścianek z active=true
         public int activeFaces = 6;
         //  false, gdy activeFaces = 0
-        public bool active = true;
+        //public bool active = true;
         //  obliczona heurystyka(wartość ważna, tylko gdy bestValue=0)
         public int heuristic;
         //  Prostopadloscian do ktorego nalezy kostka
-        public Cube cube;
+        //public Cube cube;
         //  pozycja z kostki
         public int x;
         public int y;
         public int z;
 
-        public int willBlock;
+        public Dice()
+        {
+        }
+
+        public Dice(int activeFaces, int heuristic, int x, int y, int z)
+        {
+            this.activeFaces = activeFaces;
+            this.heuristic = heuristic;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
 
         public int this[int pos]
         {
@@ -35,9 +47,9 @@ namespace TAIO
                 switch (pos)
                 {
                     case 0:
-                        return y;
-                    case 1:
                         return x;
+                    case 1:
+                        return y;
                     case 2:
                         return z;
                     default:
@@ -61,22 +73,12 @@ namespace TAIO
             return GetEnumerator();
         }
 
-        public Dice Clone(Cube c)
+        public Dice Clone()
         {
-            var ret = new Dice
-                {
-                    active = active,
-                    activeFaces = activeFaces,
-                    bestValue = bestValue,
-                    cube = c,
-                    heuristic = heuristic,
-                    x = x,
-                    y = y,
-                    z = z,
-                    willBlock = willBlock
-                };
-            foreach (var face in faces)
-                ret.faces[face.direction] = face.Clone(ret);
+            var ret = new Dice(activeFaces, heuristic, x, y, z);
+            faces.CopyTo(ret.faces, 0);
+            //for (int i = 0; i < 6; i++)
+            //    ret.faces[i] = faces[i];
             return ret;
         }
 

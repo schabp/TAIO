@@ -7,12 +7,12 @@ namespace TAIO
 {
     public static class Direction
     {
-        public const int S = 0;
-        public const int N = 1;
-        public const int W = 2;
-        public const int E = 3;
-        public const int D = 4;
-        public const int U = 5;
+        public const int W = 0;
+        public const int E = 1;
+        public const int D = 2;
+        public const int U = 3;
+        public const int S = 4;
+        public const int N = 5;
 
         public static int[] dirs = new[] { S, U, E, D, W, N };
 
